@@ -1,0 +1,35 @@
+id: tomcat-default-image-detection
+
+info:
+  name: Apache Tomcat Default Image Detection
+  author: s1d6p01nt7
+  severity: info
+  description: |
+    Detects if an Apache Tomcat server is exposing the default `tomcat.gif` image in the response body.
+    This indicates a non-hardened server configuration exposing default assets.
+  tags: tomcat, default, info-disclosure
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/?f=%5B"
+    headers:
+      User-Agent: "Mozilla/5.0"
+      Custom-Header: "your-custom-identifier"
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '<img src="tomcat.gif" height="92" width="130" alt="The Mighty Tomcat - MEOW!"/>'
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: regex
+        part: body
+        regex:
+          - "<img src=\"tomcat.gif\" height=\"92\" width=\"130\" alt=\"The Mighty Tomcat - MEOW!\"/>"
